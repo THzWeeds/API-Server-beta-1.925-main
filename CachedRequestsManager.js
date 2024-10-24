@@ -25,10 +25,10 @@ class CachedRequestsManager {
     static find(url) {
         const cached = this.cache.get(url);
         if (cached) {
-            console.log(`Cache hit for URL: ${url}, ETag: ${cached.ETag}`);
+            console.log(`Cache hit pour URL: ${url}, ETag: ${cached.ETag}`);
             return cached;
         }
-        console.log(`Cache miss for URL: ${url}`);
+        console.log(`Cache miss pour URL: ${url}`);
         return null;
     }
 
@@ -46,7 +46,7 @@ class CachedRequestsManager {
         for (let [url, { timestamp }] of this.cache) {
             if (now - timestamp > this.cacheExpiryTime) {
                 this.clear(url);
-                console.log(`Retrait de cache expirée avec l’URL: ${url}`);
+                console.log(`cache expirée avec l’URL: ${url}`);
             }
         }
     }
