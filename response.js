@@ -48,10 +48,11 @@ export default class Response {
     
         if (obj !== null) {
             let content = JSON.stringify(obj);
+            console.log(FgCyan + Bright, "Etag -->", ETag.toString().substring(0, 75) + "...");
             console.log(FgCyan + Bright, "Response payload -->", content.toString().substring(0, 75) + "...");
     
 
-            if (!fromCache && this.HttpContext.isCacheable && !this.HttpContext.req.headers['If-None-Match']) {
+            if (!fromCache && this.HttpContext.isCacheable) {
 
                 const urlParts = new URL(this.HttpContext.req.url, `http://${this.HttpContext.req.headers.host}`);
                 const id = urlParts.searchParams.get('id') || urlParts.pathname.match(/\/\d+$/);
