@@ -39,22 +39,28 @@ export default class Response {
     }
 
     // Modified JSON method to support caching
-    JSON(obj, ETag = "") {                         // ok status with content
+    JSON(obj, ETag = "", fromCache = false) {   
         if (ETag !== "") {
             this.res.writeHead(200, { 'content-type': 'application/json', 'ETag': ETag });
         } else {
             this.res.writeHead(200, { 'content-type': 'application/json' });
         }
-
+    
         if (obj !== null) {
             let content = JSON.stringify(obj);
             console.log(FgCyan + Bright, "Response payload -->", content.toString().substring(0, 75) + "...");
+    
 
-            // Cache the response if the request is eligible (API, GET, no ID in the path, etc.)
-            if (this.HttpContext.isCacheable && !this.HttpContext.req.headers['If-None-Match']) {
-                CachedRequestsManager.add(this.HttpContext.req.url, obj, ETag);
+            if (!fromCache && this.HttpContext.isCacheable && !this.HttpContext.req.headers['If-None-Match']) {
+
+                const urlParts = new URL(this.HttpContext.req.url, `http://${this.HttpContext.req.headers.host}`);
+                const id = urlParts.searchParams.get('id') || urlParts.pathname.match(/\/\d+$/);
+    
+                if (!id) {  
+                    CachedRequestsManager.add(this.HttpContext.req.url, obj, ETag);
+                }
             }
-
+    
             return this.end(content);
         } else {
             return this.end();
